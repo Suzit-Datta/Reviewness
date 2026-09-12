@@ -8,6 +8,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { EmployeeModule } from './employee/employee.module.js';
 import { CompanyModule } from './company/company.module.js';
+import { ProductModule } from './product/product.module.js';
 
 @Module({
   imports: [
@@ -31,6 +32,8 @@ import { CompanyModule } from './company/company.module.js';
     EmployeeModule,
 
     CompanyModule,
+
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
