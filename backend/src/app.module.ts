@@ -12,6 +12,7 @@ import { ProductModule } from './product/product.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { CommentModule } from './comment/comment.module.js';
 import { CategoryModule } from './category/category.module.js';
+import { IndustryModule } from './industry/industry.module.js';
 
 
 @Module({
@@ -34,15 +35,13 @@ import { CategoryModule } from './category/category.module.js';
       serveRoot: '/uploads',
     }),
     EmployeeModule,
-
     CompanyModule,
-
     ProductModule,
     AdminModule,
     CommentModule,
     CategoryModule,
+    IndustryModule,
   ],
-
   controllers: [AppController],
   providers: [AppService],
 })
