@@ -13,6 +13,8 @@ import { AdminModule } from './admin/admin.module.js';
 import { CommentModule } from './comment/comment.module.js';
 import { CategoryModule } from './category/category.module.js';
 import { IndustryModule } from './industry/industry.module.js';
+import { UsersModule } from './users/users.module.js';
+import { PostModule } from './post/post.module.js';
 
 
 @Module({
@@ -41,7 +43,11 @@ import { IndustryModule } from './industry/industry.module.js';
     CommentModule,
     CategoryModule,
     IndustryModule,
+    UsersModule,
+    PostModule,
   ],
+
+
   controllers: [AppController],
   providers: [AppService],
 })
