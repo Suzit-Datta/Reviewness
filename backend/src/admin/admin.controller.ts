@@ -132,4 +132,23 @@ export class AdminController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.remove(id);
   }
+
+  //Employee
+  @Get('employees/pending')
+ findPendingEmployees() {
+  return this.adminService.findPendingEmployees();
+ }
+
+@Patch('employees/:id/approve')
+approveEmployee(
+  @Param('id', ParseIntPipe) id: number,
+  @Body('adminId', ParseIntPipe) adminId: number, // temporary until JWT
+  ) {
+  return this.adminService.approveEmployee(id, adminId);
+  }
+
+@Patch('employees/:id/reject')
+rejectEmployee(@Param('id', ParseIntPipe) id: number) {
+  return this.adminService.rejectEmployee(id);
+  }
 }

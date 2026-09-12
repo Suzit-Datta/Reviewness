@@ -59,4 +59,9 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }
+
+  @Get('company/:companyId')
+  findByCompany(@Param('companyId', ParseIntPipe) companyId: number) {
+  return this.productService.findByCompany(companyId);
+  }
 }

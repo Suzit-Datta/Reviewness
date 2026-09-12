@@ -7,6 +7,8 @@ import {
   OneToOne,
 } from 'typeorm';
 import type { AdminSettings } from './admin-settings.entity.js';
+import { OneToMany } from 'typeorm';   // add to your existing typeorm imports
+import type { Employee } from '../../employee/employee.entity.js';
 
 @Entity('admins')
 export class Admin {
@@ -38,6 +40,8 @@ export class Admin {
     cascade: true,
     eager: true,
   })
+  @OneToMany('Employee', (employee: Employee) => employee.approvedByAdmin)
+  employees: Employee[];
   settings: AdminSettings;
 
   @CreateDateColumn()
