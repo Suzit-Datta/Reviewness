@@ -1,10 +1,14 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Post } from '../../post/post.entity.js';
 
 @Entity('comments')
 export class Comment {
@@ -14,15 +18,18 @@ export class Comment {
   @Column('text')
   content: string;
 
-  // FK placeholders — relations to be added later by the team
   @Column({ nullable: true })
   userId: number;
 
   @Column()
-   postId: number;
+  postId: number;
 
   @Column({ nullable: true })
   companyId: number;
+
+  @ManyToOne(() => Post, (post) => post.comments)
+  @JoinColumn({ name: 'postId' })
+  post: Post;
 
   @CreateDateColumn()
   createdAt: Date;
