@@ -4,15 +4,16 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { join } from 'path';
 import { unlink } from 'fs/promises';
 import { existsSync } from 'fs';
 import { Admin } from './entities/admin.entity.js';
+import { AdminSettings } from './entities/admin-settings.entity.js';
 import { CreateAdminDto } from './dto/create-admin.dto.js';
 import { UpdateAdminDto } from './dto/update-admin.dto.js';
-import { ILike } from 'typeorm';   
+import { UpdateAdminSettingsDto } from './dto/update-admin-settings.dto.js';
 
 @Injectable()
 export class AdminService {
@@ -38,6 +39,7 @@ export class AdminService {
       ...createAdminDto,
       password: hashedPassword,
       image: image?.filename,
+      settings: new AdminSettings(), // defaults filled by DB column defaults
     });
 
     return this.adminRepository.save(admin);
@@ -45,6 +47,12 @@ export class AdminService {
 
   findAll(): Promise<Admin[]> {
     return this.adminRepository.find();
+  }
+
+  searchByName(name: string): Promise<Admin[]> {
+    return this.adminRepository.find({
+      where: { name: ILike(`%${name}%`) },
+    });
   }
 
   async findOne(id: number): Promise<Admin> {
@@ -77,6 +85,19 @@ export class AdminService {
     return this.adminRepository.save(admin);
   }
 
+  async updateSettings(
+    id: number,
+    settingsDto: UpdateAdminSettingsDto,
+  ): Promise<AdminSettings> {
+    const admin = await this.findOne(id); // settings load eagerly
+
+    Object.assign(admin.settings, settingsDto);
+
+    await this.adminRepository.save(admin); // cascade saves settings too
+
+    return admin.settings;
+  }
+
   async remove(id: number): Promise<{ message: string }> {
     const admin = await this.findOne(id);
 
@@ -104,11 +125,4 @@ export class AdminService {
       console.error(`Failed to delete image file: ${filename}`, error);
     }
   }
-
-  searchByName(name: string): Promise<Admin[]> {
-  return this.adminRepository.find({
-    where: { name: ILike(`%${name}%`) },
-  });
-  }
 }
-

@@ -4,10 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
+import type { AdminSettings } from './admin-settings.entity.js';
 
-
-@Entity('admin')
+@Entity('admins')
 export class Admin {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,7 +19,7 @@ export class Admin {
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false }) // won't be returned in queries by default
+  @Column({ select: false })
   password: string;
 
   @Column()
@@ -32,6 +33,12 @@ export class Admin {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToOne('AdminSettings', (settings: AdminSettings) => settings.admin, {
+    cascade: true,
+    eager: true,
+  })
+  settings: AdminSettings;
 
   @CreateDateColumn()
   createdAt: Date;

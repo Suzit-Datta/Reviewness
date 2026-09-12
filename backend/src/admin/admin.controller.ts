@@ -18,6 +18,7 @@ import { diskStorage } from 'multer';
 import { AdminService } from './admin.service.js';
 import { CreateAdminDto } from './dto/create-admin.dto.js';
 import { UpdateAdminDto } from './dto/update-admin.dto.js';
+import { UpdateAdminSettingsDto } from './dto/update-admin-settings.dto.js'; 
 
 @Controller('admin')
 export class AdminController {
@@ -117,6 +118,14 @@ export class AdminController {
     image: Express.Multer.File,
   ) {
     return this.adminService.update(id, updateAdminDto, image);
+  }
+
+  @Patch(':id/settings')
+    updateSettings(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() settingsDto: UpdateAdminSettingsDto,
+  ) {
+  return this.adminService.updateSettings(id, settingsDto);
   }
 
   @Delete(':id')

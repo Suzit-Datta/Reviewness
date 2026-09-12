@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { CommentModule } from './comment/comment.module.js';
+import { CategoryModule } from './category/category.module.js';
 
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDirname = dirname(currentFilename);
@@ -31,7 +33,9 @@ const currentDirname = dirname(currentFilename);
       rootPath: join(currentDirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
-    AdminModule
+    AdminModule,
+    CommentModule,
+    CategoryModule
     // ...AdminModule is already here from the CLI
   ], 
   controllers: [AppController],
