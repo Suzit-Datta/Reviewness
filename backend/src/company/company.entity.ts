@@ -4,7 +4,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Industry } from '../industry/industry.entity.js';
 
 @Entity('companies')
 export class Company {
@@ -19,6 +23,10 @@ export class Company {
 
   @Column({ length: 255 })
   password: string;
+
+  @ManyToOne(() => Industry, (industry) => industry.companies)
+  @JoinColumn({ name: 'industryId' })
+  industry: Relation<Industry>;
 
   @Column()
   industryId: number;

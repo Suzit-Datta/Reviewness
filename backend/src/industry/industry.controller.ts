@@ -22,6 +22,11 @@ export class IndustryController {
     return this.industryService.findOne(+id);
   }
 
+  @Get(':id/companies')
+  findCompaniesByIndustry(@Param('id') id: string) {
+    return this.industryService.findCompaniesByIndustry(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateIndustryDto: UpdateIndustryDto) {
     return this.industryService.update(+id, updateIndustryDto);

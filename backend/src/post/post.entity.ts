@@ -2,9 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  JoinColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Product } from '../product/product.entity.js';
 
 @Entity()
 export class Post {
@@ -30,6 +34,22 @@ export class Post {
     nullable: true,
   })
   image?: string;
+
+  @Column()
+  userId: number;
+
+  @Column()
+  companyId: number;
+
+  @Column()
+  categoryId: number;
+
+  @ManyToOne(() => Product, (product) => product.posts)
+  @JoinColumn({ name: 'productId' })
+  product: Relation<Product>;
+
+  @Column()
+  productId: number;
 
   @CreateDateColumn()
   createdAt: Date;

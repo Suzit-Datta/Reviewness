@@ -45,6 +45,12 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
+  // Get all posts under a product
+  @Get(':id/posts')
+  findPostsByProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.findPostsByProduct(id);
+  }
+
   // Update product
   @Patch(':id')
   update(

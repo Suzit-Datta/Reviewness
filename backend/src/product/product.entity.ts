@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Post } from '../post/post.entity.js';
 
 @Entity('products')
 export class Product {
@@ -14,7 +17,7 @@ export class Product {
   @Column({ length: 150 })
   name: string;
 
-  @Column({ type: 'decimal', precision: 2, scale: 1, default: 0, }) 
+  @Column({ type: 'decimal', precision: 2, scale: 1, default: 0 })
   rating: number;
 
   @Column()
@@ -22,6 +25,9 @@ export class Product {
 
   @Column()
   categoryId: number;
+
+  @OneToMany(() => Post, (post) => post.product)
+  posts: Relation<Post[]>;
 
   @CreateDateColumn()
   createdAt: Date;
