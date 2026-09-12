@@ -11,3 +11,7 @@ backend/dist/
 # macOS
 .DS_Store
 **/.DS_Store
+
+
+# Folder
+backend/uploads
