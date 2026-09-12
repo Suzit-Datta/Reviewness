@@ -3,12 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { UsersModule } from './users/users.module.js';
-
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { join } from 'path';
+
+import { UsersModule } from './users/users.module.js';
+import { PostModule } from './post/post.module.js';
 
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDirname = dirname(currentFilename);
@@ -16,6 +17,7 @@ const currentDirname = dirname(currentFilename);
 @Module({
   imports: [
     UsersModule,
+    PostModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
