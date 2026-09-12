@@ -9,11 +9,15 @@ import { AppService } from './app.service.js';
 import { EmployeeModule } from './employee/employee.module.js';
 import { CompanyModule } from './company/company.module.js';
 import { ProductModule } from './product/product.module.js';
+import { AdminModule } from './admin/admin.module.js';
+import { CommentModule } from './comment/comment.module.js';
+import { CategoryModule } from './category/category.module.js';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, // makes env vars available everywhere, no re-importing
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -34,7 +38,11 @@ import { ProductModule } from './product/product.module.js';
     CompanyModule,
 
     ProductModule,
+    AdminModule,
+    CommentModule,
+    CategoryModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })
