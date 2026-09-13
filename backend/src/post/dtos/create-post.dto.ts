@@ -1,4 +1,5 @@
 import {
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -14,15 +15,14 @@ export class CreatePostDto {
   @MaxLength(255)
   caption: string;
 
-  // multipart/form-data sends every field as a string, so this
-  // converts "4.5" -> 4.5 before the @IsNumber() check runs.
   @Type(() => Number)
   @IsNumber()
   @Min(0)
   @Max(5)
   rating: number;
 
-  // Note: no `image` field here on purpose — the photo comes in as a
-  // multipart file (field name "photo"), not as a JSON/body property.
-  // The service sets `image` itself from the uploaded file's filename.
+  @Type(() => Number)
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
 }

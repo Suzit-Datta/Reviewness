@@ -10,6 +10,7 @@ import { join } from 'path';
 import { Post } from './post.entity.js';
 import { CreatePostDto } from './dtos/create-post.dto.js';
 import { UpdatePostDto } from './dtos/update-post.dto.js';
+import { User } from '../users/user.entity.js';
 
 const UPLOADS_DIR = join(process.cwd(), 'uploads');
 
@@ -27,6 +28,8 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   public async getAllPosts(): Promise<Post[]> {
@@ -52,10 +55,30 @@ export class PostService {
     return post;
   }
 
+  public async getPostsByUserId(userId: number): Promise<Post[]> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    return this.postRepository.find({ where: { userId } });
+  }
+
+  private async assertUserExists(userId: number): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+  }
+
   public async createPost(
     createPostDto: CreatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
+    await this.assertUserExists(createPostDto.userId);
+
     try {
       const post = this.postRepository.create({
         ...createPostDto,
@@ -73,8 +96,6 @@ export class PostService {
     }
   }
 
-  // PUT — full replace. Photo is still optional: send a new one to
-  // replace the picture, or omit it to keep the existing one.
   public async updatePost(
     id: number,
     updatePostDto: CreatePostDto,
@@ -82,8 +103,13 @@ export class PostService {
   ): Promise<Post> {
     const post = await this.getPostById(id);
 
+    if (updatePostDto.userId !== post.userId) {
+      await this.assertUserExists(updatePostDto.userId);
+    }
+
     post.caption = updatePostDto.caption;
     post.rating = updatePostDto.rating;
+    post.userId = updatePostDto.userId;
 
     if (photo) {
       this.deleteOldPhoto(post.image);
@@ -93,13 +119,19 @@ export class PostService {
     return await this.postRepository.save(post);
   }
 
-  // PATCH — partial update, only sent fields (and photo, if provided) change
   public async patchPost(
     id: number,
     patchPostDto: UpdatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
     const post = await this.getPostById(id);
+
+    if (
+      patchPostDto.userId !== undefined &&
+      patchPostDto.userId !== post.userId
+    ) {
+      await this.assertUserExists(patchPostDto.userId);
+    }
 
     Object.assign(post, patchPostDto);
 
@@ -111,16 +143,13 @@ export class PostService {
     return await this.postRepository.save(post);
   }
 
-  // Hard delete — no `deletedAt` column on this entity, so the row
-  // is actually removed (unlike Users, which soft-deletes).
   public async deletePost(id: number): Promise<{ deleted: boolean }> {
-    const post = await this.getPostById(id); // throws NotFoundException if missing
+    const post = await this.getPostById(id);
     this.deleteOldPhoto(post.image);
     await this.postRepository.delete(id);
     return { deleted: true };
   }
 
-  // Best-effort cleanup so replaced/removed photos don't pile up on disk.
   private deleteOldPhoto(filename?: string) {
     if (!filename) return;
     const filePath = join(UPLOADS_DIR, filename);
