@@ -30,6 +30,11 @@ export class PostController {
     return this.postService.getAllPosts();
   }
 
+  @Get('user/:userId')
+  public getPostsByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.postService.getPostsByUserId(userId);
+  }
+
   @Get(':id')
   getPostById(
     @Param('id', ParseIntPipe) id: number,

@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import type { Relation } from 'typeorm';
+import { User } from '../users/user.entity.js';
 
 import { Product } from '../product/product.entity.js';
 
@@ -52,6 +52,10 @@ export class Post {
   @ManyToOne(() => Product, (product) => product.posts)
   @JoinColumn({ name: 'productId' })
   product: Relation<Product>;
+
+  @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn({ name: 'userId' })
+  user: Relation<User>;
 
   @CreateDateColumn()
   createdAt: Date;

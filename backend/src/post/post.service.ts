@@ -5,16 +5,25 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
 
 import { existsSync, unlinkSync } from 'fs';
+
 import { join } from 'path';
 
 import { Post } from './post.entity.js';
+
 import { CreatePostDto } from './dtos/create-post.dto.js';
+
 import { UpdatePostDto } from './dtos/update-post.dto.js';
 
-const UPLOADS_DIR = join(process.cwd(), 'uploads');
+import { User } from '../users/user.entity.js';
+
+const UPLOADS_DIR = join(
+  process.cwd(),
+  'uploads',
+);
 
 function isErrorWithCode(
   error: unknown,
@@ -23,7 +32,9 @@ function isErrorWithCode(
     typeof error === 'object' &&
     error !== null &&
     'code' in error &&
-    typeof (error as { code: unknown }).code === 'string'
+    typeof (
+      error as { code: unknown }
+    ).code === 'string'
   );
 }
 
@@ -32,11 +43,16 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     postRepository: Repository<Post>,
+
+    @InjectRepository(User)
+    userRepository: Repository<User>,
   ) {
     this.postRepository = postRepository;
+    this.userRepository = userRepository;
   }
 
   postRepository: Repository<Post>;
+  userRepository: Repository<User>;
 
   async getAllPosts(): Promise<Post[]> {
     try {
@@ -60,10 +76,13 @@ export class PostService {
     }
   }
 
-  async getPostById(id: number): Promise<Post> {
-    const post = await this.postRepository.findOne({
-      where: { id },
-    });
+  async getPostById(
+    id: number,
+  ): Promise<Post> {
+    const post =
+      await this.postRepository.findOne({
+        where: { id },
+      });
 
     if (!post) {
       throw new NotFoundException(
@@ -74,19 +93,63 @@ export class PostService {
     return post;
   }
 
+  async getPostsByUserId(
+    userId: number,
+  ): Promise<Post[]> {
+    const user =
+      await this.userRepository.findOneBy({
+        id: userId,
+      });
+
+    if (!user) {
+      throw new NotFoundException(
+        `User with id ${userId} not found`,
+      );
+    }
+
+    return await this.postRepository.find({
+      where: { userId },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async assertUserExists(
+    userId: number,
+  ): Promise<void> {
+    const user =
+      await this.userRepository.findOneBy({
+        id: userId,
+      });
+
+    if (!user) {
+      throw new NotFoundException(
+        `User with id ${userId} not found`,
+      );
+    }
+  }
+
   async createPost(
     createPostDto: CreatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
-    try {
-      const post = this.postRepository.create({
-        ...createPostDto,
-        image: photo
-          ? photo.filename
-          : undefined,
-      });
+    await this.assertUserExists(
+      createPostDto.userId,
+    );
 
-      return await this.postRepository.save(post);
+    try {
+      const post =
+        this.postRepository.create({
+          ...createPostDto,
+          image: photo
+            ? photo.filename
+            : undefined,
+        });
+
+      return await this.postRepository.save(
+        post,
+      );
     } catch (error) {
       if (
         isErrorWithCode(error) &&
@@ -107,16 +170,31 @@ export class PostService {
     updatePostDto: UpdatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
-    const post = await this.getPostById(id);
+    const post =
+      await this.getPostById(id);
 
-    Object.assign(post, updatePostDto);
+    if (
+      updatePostDto.userId !== undefined &&
+      updatePostDto.userId !== post.userId
+    ) {
+      await this.assertUserExists(
+        updatePostDto.userId,
+      );
+    }
+
+    Object.assign(
+      post,
+      updatePostDto,
+    );
 
     if (photo) {
       this.deleteOldPhoto(post.image);
       post.image = photo.filename;
     }
 
-    return await this.postRepository.save(post);
+    return await this.postRepository.save(
+      post,
+    );
   }
 
   async patchPost(
@@ -124,22 +202,40 @@ export class PostService {
     patchPostDto: UpdatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
-    const post = await this.getPostById(id);
+    const post =
+      await this.getPostById(id);
 
-    Object.assign(post, patchPostDto);
+    if (
+      patchPostDto.userId !== undefined &&
+      patchPostDto.userId !== post.userId
+    ) {
+      await this.assertUserExists(
+        patchPostDto.userId,
+      );
+    }
+
+    Object.assign(
+      post,
+      patchPostDto,
+    );
 
     if (photo) {
       this.deleteOldPhoto(post.image);
       post.image = photo.filename;
     }
 
-    return await this.postRepository.save(post);
+    return await this.postRepository.save(
+      post,
+    );
   }
 
   async deletePost(
     id: number,
   ): Promise<{ deleted: boolean }> {
-    await this.getPostById(id);
+    const post =
+      await this.getPostById(id);
+
+    this.deleteOldPhoto(post.image);
 
     await this.postRepository.delete(id);
 
@@ -148,7 +244,9 @@ export class PostService {
     };
   }
 
-  deleteOldPhoto(filename?: string) {
+  deleteOldPhoto(
+    filename?: string,
+  ) {
     if (!filename) {
       return;
     }
