@@ -18,7 +18,7 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
-  ) {}
+  ) { }
 
   // Create product
   async create(
@@ -111,10 +111,10 @@ export class ProductService {
   }
 
   // in product.service.ts
- findByCompany(companyId: number): Promise<Product[]> {
-  return this.productRepository.find({
-    where: { companyId },
-  });
+  findByCompany(companyId: number): Promise<Product[]> {
+    return this.productRepository.find({
+      where: { companyId },
+    });
   }
 }
 

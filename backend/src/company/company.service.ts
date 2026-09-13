@@ -5,30 +5,47 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository, Like } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
+
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 
 import { Company } from './company.entity.js';
+
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
+
+import { MailService } from '../mail/mail.service.js';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>,
-  ) { }
+    companyRepository: Repository<Company>,
+
+    mailService: MailService,
+  ) {
+    this.companyRepository = companyRepository;
+    this.mailService = mailService;
+  }
+
+  companyRepository: Repository<Company>;
+  mailService: MailService;
 
   // Create company
-  async create(createCompanyDto: CreateCompanyDto, file?: Express.Multer.File,): Promise<Company> {
-    const existingCompany = await this.companyRepository.findOne({
-      where: {
-        email: createCompanyDto.email,
-      },
-    });
+  async create(
+    createCompanyDto: CreateCompanyDto,
+    file?: Express.Multer.File,
+  ): Promise<Company> {
+    const existingCompany =
+      await this.companyRepository.findOne({
+        where: {
+          email: createCompanyDto.email,
+        },
+      });
 
     if (existingCompany) {
       throw new ConflictException(
@@ -36,20 +53,36 @@ export class CompanyService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(createCompanyDto.password, 10);
+    const hashedPassword = await bcrypt.hash(
+      createCompanyDto.password,
+      10,
+    );
 
     // Create company
-    const company = this.companyRepository.create({
-      ...createCompanyDto,
-      password: hashedPassword,
-      logo: file
-        ? `/uploads/${file.filename}`
-        : undefined,
-      isSubscribe: false,
-      isApproved: false,
-    });
+    const company =
+      this.companyRepository.create({
+        ...createCompanyDto,
+        password: hashedPassword,
 
-    return await this.companyRepository.save(company);
+        logo: file
+          ? `/uploads/${file.filename}`
+          : undefined,
+
+        isSubscribe: false,
+        isApproved: false,
+      });
+
+    // Save company
+    const savedCompany =
+      await this.companyRepository.save(company);
+
+    // Send registration email
+    await this.mailService.sendRegistrationMail(
+      savedCompany.email,
+      savedCompany.companyName,
+    );
+
+    return savedCompany;
   }
 
   // Get all companies
@@ -65,14 +98,18 @@ export class CompanyService {
       });
 
     if (!company) {
-      throw new NotFoundException('Company not found');
+      throw new NotFoundException(
+        'Company not found',
+      );
     }
 
     return company;
   }
 
   // Search company by name
-  async searchByName(name: string): Promise<Company[]>{
+  async searchByName(
+    name: string,
+  ): Promise<Company[]> {
     return await this.companyRepository.find({
       where: {
         companyName: Like(`%${name}%`),
@@ -81,14 +118,20 @@ export class CompanyService {
   }
 
   // Update company
-  async update(id: number, updateCompanyDto: UpdateCompanyDto,
-    file?: Express.Multer.File): Promise<Company> {
-    const company = await this.companyRepository.findOne({
-      where: { id },
-    });
+  async update(
+    id: number,
+    updateCompanyDto: UpdateCompanyDto,
+    file?: Express.Multer.File,
+  ): Promise<Company> {
+    const company =
+      await this.companyRepository.findOne({
+        where: { id },
+      });
 
     if (!company) {
-      throw new NotFoundException('Company not found');
+      throw new NotFoundException(
+        'Company not found',
+      );
     }
 
     // Check email
@@ -121,7 +164,7 @@ export class CompanyService {
 
     // Update logo
     if (file) {
-      // Delete old logo from uploads folder
+      // Delete old logo
       if (company.logo) {
         const oldFilePath = join(
           process.cwd(),
@@ -139,26 +182,37 @@ export class CompanyService {
       }
 
       // Save new logo path
-      company.logo = `/uploads/${file.filename}`;
+      company.logo =
+        `/uploads/${file.filename}`;
     }
 
     // Update other company information
-    Object.assign(company, updateCompanyDto);
+    Object.assign(
+      company,
+      updateCompanyDto,
+    );
 
-    return await this.companyRepository.save(company);
+    return await this.companyRepository.save(
+      company,
+    );
   }
 
   // Delete company
-  async remove(id: number): Promise<{ message: string }> {
-    const company = await this.companyRepository.findOne({
-      where: { id },
-    });
+  async remove(
+    id: number,
+  ): Promise<{ message: string }> {
+    const company =
+      await this.companyRepository.findOne({
+        where: { id },
+      });
 
     if (!company) {
-      throw new NotFoundException('Company not found');
+      throw new NotFoundException(
+        'Company not found',
+      );
     }
 
-    // Delete logo file from uploads folder
+    // Delete logo file
     if (company.logo) {
       const filePath = join(
         process.cwd(),
@@ -174,8 +228,12 @@ export class CompanyService {
         );
       }
     }
+
     // Delete company from database
-    await this.companyRepository.remove(company);
+    await this.companyRepository.remove(
+      company,
+    );
+
     return {
       message: 'Company deleted successfully',
     };
