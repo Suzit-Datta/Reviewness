@@ -2,12 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import type { Company } from '../company/company.entity.js';
+import type { Relation } from 'typeorm';
+import { Post } from '../post/post.entity.js';
 
 @Entity('products')
 export class Product {
@@ -25,6 +28,9 @@ export class Product {
 
   @Column()
   categoryId: number;
+
+  @OneToMany(() => Post, (post) => post.product)
+  posts: Relation<Post[]>;
 
   @CreateDateColumn()
   createdAt: Date;

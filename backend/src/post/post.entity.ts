@@ -2,12 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Comment } from '../comment/entities/comment.entity.js';
+import type { Relation } from 'typeorm';
+
+import { Product } from '../product/product.entity.js';
 
 @Entity('posts')
 export class Post {
@@ -34,8 +37,21 @@ export class Post {
   })
   image?: string;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
-  comments: Comment[];
+  @Column()
+  userId: number;
+
+  @Column()
+  companyId: number;
+
+  @Column()
+  categoryId: number;
+
+  @Column()
+  productId: number;
+
+  @ManyToOne(() => Product, (product) => product.posts)
+  @JoinColumn({ name: 'productId' })
+  product: Relation<Product>;
 
   @CreateDateColumn()
   createdAt: Date;

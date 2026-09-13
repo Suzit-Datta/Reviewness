@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 
 import { Product } from './product.entity.js';
+import { Post } from '../post/post.entity.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
 
@@ -15,6 +16,8 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
   ) {}
 
   // Create product
@@ -55,6 +58,13 @@ export class ProductService {
     }
 
     return product;
+  }
+
+  // Get all posts under a product
+  async findPostsByProduct(productId: number): Promise<Post[]> {
+    return await this.postRepository.find({
+      where: { productId },
+    });
   }
 
   // Update product
@@ -107,3 +117,4 @@ export class ProductService {
   });
   }
 }
+

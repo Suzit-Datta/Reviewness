@@ -36,7 +36,9 @@ export class CommentService {
     return this.commentRepository.find();
   }
 
-  async findByPost(postId: number): Promise<Comment[]> {
+  async findByPost(
+    postId: number,
+  ): Promise<Comment[]> {
     return await this.commentRepository.find({
       where: {
         postId: postId,

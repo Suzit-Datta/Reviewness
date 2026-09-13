@@ -22,6 +22,22 @@ export class CreatePostDto {
   @Max(5)
   rating: number;
 
+  @Type(() => Number)
+  @IsNumber()
+  userId: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  companyId: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  categoryId: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  productId: number;
+
   // Note: no `image` field here on purpose — the photo comes in as a
   // multipart file (field name "photo"), not as a JSON/body property.
   // The service sets `image` itself from the uploaded file's filename.

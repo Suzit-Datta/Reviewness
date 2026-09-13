@@ -31,19 +31,27 @@ function isErrorWithCode(
 export class PostService {
   constructor(
     @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>,
-  ) { }
+    postRepository: Repository<Post>,
+  ) {
+    this.postRepository = postRepository;
+  }
+
+  postRepository: Repository<Post>;
 
   async getAllPosts(): Promise<Post[]> {
     try {
-      return await this.postRepository.find();
+      return await this.postRepository.find({
+        order: {
+          createdAt: 'DESC',
+        },
+      });
     } catch (error) {
       if (
         isErrorWithCode(error) &&
         error.code === 'ETIMEDOUT'
       ) {
         throw new RequestTimeoutException(
-          'request timed out error',
+          'Request timed out',
           { cause: error },
         );
       }
@@ -53,8 +61,8 @@ export class PostService {
   }
 
   async getPostById(id: number): Promise<Post> {
-    const post = await this.postRepository.findOneBy({
-      id,
+    const post = await this.postRepository.findOne({
+      where: { id },
     });
 
     if (!post) {
@@ -85,7 +93,7 @@ export class PostService {
         error.code === 'ETIMEDOUT'
       ) {
         throw new RequestTimeoutException(
-          'request timed out error',
+          'Request timed out',
           { cause: error },
         );
       }
@@ -96,13 +104,12 @@ export class PostService {
 
   async updatePost(
     id: number,
-    updatePostDto: CreatePostDto,
+    updatePostDto: UpdatePostDto,
     photo?: Express.Multer.File,
   ): Promise<Post> {
     const post = await this.getPostById(id);
 
-    post.caption = updatePostDto.caption;
-    post.rating = updatePostDto.rating;
+    Object.assign(post, updatePostDto);
 
     if (photo) {
       this.deleteOldPhoto(post.image);
@@ -132,9 +139,7 @@ export class PostService {
   async deletePost(
     id: number,
   ): Promise<{ deleted: boolean }> {
-    const post = await this.getPostById(id);
-
-    this.deleteOldPhoto(post.image);
+    await this.getPostById(id);
 
     await this.postRepository.delete(id);
 

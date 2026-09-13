@@ -1,34 +1,27 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  ParseIntPipe,
-  Patch,
   Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { CommentService } from './comment.service.js';
-
 import { CreateCommentDto } from './dto/create-comment.dto.js';
-
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
 
 @Controller('comment')
 export class CommentController {
   constructor(
-    commentService: CommentService,
-  ) {
-    this.commentService = commentService;
-  }
-
-  commentService: CommentService;
+    private commentService: CommentService,
+  ) {}
 
   @Post()
   create(
-    @Body()
-    createCommentDto: CreateCommentDto,
+    @Body() createCommentDto: CreateCommentDto,
   ) {
     return this.commentService.create(
       createCommentDto,
