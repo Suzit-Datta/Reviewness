@@ -4,7 +4,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import type { Product } from '../product/product.entity.js';
 
 @Entity('companies')
 export class Company {
@@ -43,6 +45,9 @@ export class Company {
 
   @Column({ default: false })
   isApproved: boolean;
+
+  @OneToMany('Product', (product: Product) => product.company)
+  products: Product[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -99,4 +99,11 @@ export class ProductService {
       message: 'Product deleted successfully',
     };
   }
+
+  // in product.service.ts
+ findByCompany(companyId: number): Promise<Product[]> {
+  return this.productRepository.find({
+    where: { companyId },
+  });
+  }
 }

@@ -14,12 +14,19 @@ import { AdminSettings } from './entities/admin-settings.entity.js';
 import { CreateAdminDto } from './dto/create-admin.dto.js';
 import { UpdateAdminDto } from './dto/update-admin.dto.js';
 import { UpdateAdminSettingsDto } from './dto/update-admin-settings.dto.js';
+// add imports:
+import { Employee, EmployeeStatus } from '../employee/employee.entity.js';
+
+// add to the constructor (alongside the admin repository):
+
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
+    @InjectRepository(Employee)
+    private readonly employeeRepository: Repository<Employee>,
   ) {}
 
   async create(
@@ -124,5 +131,39 @@ export class AdminService {
     } catch (error) {
       console.error(`Failed to delete image file: ${filename}`, error);
     }
+  }
+
+  //Employee 
+
+  findPendingEmployees(): Promise<Employee[]> {
+  return this.employeeRepository.find({
+    where: { status: EmployeeStatus.PENDING },
+  });
+}
+
+async approveEmployee(employeeId: number, adminId: number): Promise<Employee> {
+  const employee = await this.employeeRepository.findOne({
+    where: { id: employeeId },
+  });
+  if (!employee) {
+    throw new NotFoundException(`Employee ${employeeId} not found`);
+  }
+
+  employee.status = EmployeeStatus.APPROVED;
+  employee.approvedByAdmin = { id: adminId } as Admin; // records which admin approved
+
+  return this.employeeRepository.save(employee);
+}
+
+async rejectEmployee(employeeId: number): Promise<Employee> {
+  const employee = await this.employeeRepository.findOne({
+    where: { id: employeeId },
+  });
+  if (!employee) {
+    throw new NotFoundException(`Employee ${employeeId} not found`);
+  }
+
+  employee.status = EmployeeStatus.REJECTED;
+  return this.employeeRepository.save(employee);
   }
 }
