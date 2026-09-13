@@ -10,6 +10,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -18,14 +19,16 @@ import { diskStorage } from 'multer';
 import { CompanyService } from './company.service.js';
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { Role } from '../auth/roles.enum.js';
 
 @Controller('companies')
 export class CompanyController {
-  constructor(
-    private readonly companyService: CompanyService,
-  ) { }
+  constructor(private readonly companyService: CompanyService) {}
 
-  // Create company
+  // Registration — left OPEN (companies self-register)
   @Post()
   @UseInterceptors(
     FileInterceptor('logo', {
@@ -42,41 +45,39 @@ export class CompanyController {
     @Body() createCompanyDto: CreateCompanyDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.companyService.create(
-      createCompanyDto,
-      file,
-    );
+    return this.companyService.create(createCompanyDto, file);
   }
 
-  // Get all companies
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.companyService.findAll();
   }
 
-  // Search company by name
   @Get('search')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   searchByName(@Query('name') name: string) {
-    return this.companyService.searchByName(
-      name,
-    );
+    return this.companyService.searchByName(name);
   }
 
-  // Get company by ID
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.companyService.findOne(id);
   }
 
-  // Update company
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UseInterceptors(
     FileInterceptor('logo', {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          const fileName =
-            Date.now() + '-' + file.originalname;
+          const fileName = Date.now() + '-' + file.originalname;
           cb(null, fileName);
         },
       }),
@@ -90,10 +91,10 @@ export class CompanyController {
     return this.companyService.update(id, updateCompanyDto, file);
   }
 
-  // Delete company
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.companyService.remove(id);
   }
 }
-

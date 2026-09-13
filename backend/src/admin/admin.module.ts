@@ -5,8 +5,9 @@ import { AdminController } from './admin.controller.js';
 import { Admin } from './entities/admin.entity.js';
 import { AdminSettings } from './entities/admin-settings.entity.js'; 
 import {Employee} from '../employee/employee.entity.js'
+import { AuthModule } from '../auth/auth.module.js';
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin,AdminSettings,Employee])],
+  imports: [TypeOrmModule.forFeature([Admin,AdminSettings,Employee,]),AuthModule,],
   controllers: [AdminController],
   providers: [AdminService],
 })

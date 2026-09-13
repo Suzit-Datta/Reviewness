@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   BadRequestException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,36 +23,34 @@ import { extname } from 'path';
 import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dtos/create-user.dto.js';
 import { UpdateUserDto } from './dtos/update-user.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { Role } from '../auth/roles.enum.js';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // Registration — left OPEN (users self-register)
   @Post()
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
         destination: './uploads',
-
         filename: (request, file, callback) => {
           const uniqueName =
             Date.now() + '-' + Math.round(Math.random() * 1000000);
-
           const extension = extname(file.originalname).toLowerCase();
-
           callback(null, uniqueName + extension);
         },
       }),
-
       limits: {
         fileSize: 3000000,
       },
-
       fileFilter: (request, file, callback) => {
         const extension = extname(file.originalname).toLowerCase();
-
         const allowedExtensions = ['.jpg', '.jpeg', '.png'];
-
         if (!allowedExtensions.includes(extension)) {
           return callback(
             new BadRequestException(
@@ -60,7 +59,6 @@ export class UsersController {
             false,
           );
         }
-
         callback(null, true);
       },
     }),
@@ -74,44 +72,42 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   public getUsers(@Query('userName') userName?: string) {
     if (userName) {
       return this.usersService.getUserByUserName(userName);
     }
-
     return this.usersService.getAllUsers();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   public getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getUserById(id);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
         destination: './uploads',
-
         filename: (request, file, callback) => {
           const uniqueName =
             Date.now() + '-' + Math.round(Math.random() * 1000000);
-
           const extension = extname(file.originalname).toLowerCase();
-
           callback(null, uniqueName + extension);
         },
       }),
-
       limits: {
         fileSize: 3000000,
       },
-
       fileFilter: (request, file, callback) => {
         const extension = extname(file.originalname).toLowerCase();
-
         const allowedExtensions = ['.jpg', '.jpeg', '.png'];
-
         if (!allowedExtensions.includes(extension)) {
           return callback(
             new BadRequestException(
@@ -120,7 +116,6 @@ export class UsersController {
             false,
           );
         }
-
         callback(null, true);
       },
     }),
@@ -135,30 +130,25 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
         destination: './uploads',
-
         filename: (request, file, callback) => {
           const uniqueName =
             Date.now() + '-' + Math.round(Math.random() * 1000000);
-
           const extension = extname(file.originalname).toLowerCase();
-
           callback(null, uniqueName + extension);
         },
       }),
-
       limits: {
         fileSize: 3000000,
       },
-
       fileFilter: (request, file, callback) => {
         const extension = extname(file.originalname).toLowerCase();
-
         const allowedExtensions = ['.jpg', '.jpeg', '.png'];
-
         if (!allowedExtensions.includes(extension)) {
           return callback(
             new BadRequestException(
@@ -167,7 +157,6 @@ export class UsersController {
             false,
           );
         }
-
         callback(null, true);
       },
     }),
@@ -182,6 +171,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   public deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.softDeleteUser(id);
   }

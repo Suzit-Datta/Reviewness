@@ -15,6 +15,7 @@ import { CategoryModule } from './category/category.module.js';
 import { IndustryModule } from './industry/industry.module.js';
 import { UsersModule } from './users/users.module.js';
 import { PostModule } from './post/post.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 
 @Module({
@@ -45,6 +46,7 @@ import { PostModule } from './post/post.module.js';
     IndustryModule,
     UsersModule,
     PostModule,
+    AuthModule,
   ],
 
 
