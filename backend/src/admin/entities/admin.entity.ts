@@ -40,9 +40,10 @@ export class Admin {
     cascade: true,
     eager: true,
   })
+  settings: AdminSettings;
+  
   @OneToMany('Employee', (employee: Employee) => employee.approvedByAdmin)
   employees: Employee[];
-  settings: AdminSettings;
 
   @CreateDateColumn()
   createdAt: Date;
