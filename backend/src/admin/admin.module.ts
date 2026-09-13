@@ -4,9 +4,17 @@ import { AdminService } from './admin.service.js';
 import { AdminController } from './admin.controller.js';
 import { Admin } from './entities/admin.entity.js';
 import { AdminSettings } from './entities/admin-settings.entity.js'; 
-import {Employee} from '../employee/employee.entity.js'
+import {Employee} from '../employee/employee.entity.js';
+import { MailModule } from '../mail/mail.module.js';
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin,AdminSettings,Employee])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Admin,
+      AdminSettings,
+      Employee,
+    ]),
+    MailModule,
+  ],
   controllers: [AdminController],
   providers: [AdminService],
 })

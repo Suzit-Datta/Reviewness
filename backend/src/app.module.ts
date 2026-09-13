@@ -16,6 +16,8 @@ import { IndustryModule } from './industry/industry.module.js';
 import { UsersModule } from './users/users.module.js';
 import { PostModule } from './post/post.module.js';
 
+import { MailModule } from './mail/mail.module.js';
+
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { PostModule } from './post/post.module.js';
     IndustryModule,
     UsersModule,
     PostModule,
+    MailModule,
   ],
 
 
