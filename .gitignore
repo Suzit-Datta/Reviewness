@@ -1,17 +1,17 @@
-# Dependencies
+# Backend
 backend/node_modules/
-
-
-# Build files
 backend/dist/
+backend/.env
+backend/uploads/
 
-# Environment variables
-.env
+# Frontend
+frontend/node_modules/
+frontend/.next/
+#frontend/.env.local
+#frontend/.env.*.local
+
 
 # macOS
 .DS_Store
 **/.DS_Store
 
-
-# Folder
-backend/uploads
