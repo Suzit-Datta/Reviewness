@@ -75,35 +75,35 @@ export class EmployeeController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   findAll() {
     return this.employeeService.findAll();
   }
 
   @Get('search')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   searchByName(@Query('name') name: string) {
     return this.employeeService.searchByName(name);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   findOne(@Param('id') id: string) {
     return this.employeeService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
     return this.employeeService.update(+id, updateEmployeeDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   remove(@Param('id') id: string) {
     return this.employeeService.remove(+id);
   }

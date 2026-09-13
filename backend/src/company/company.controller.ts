@@ -50,28 +50,28 @@ export class CompanyController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   findAll() {
     return this.companyService.findAll();
   }
 
   @Get('search')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   searchByName(@Query('name') name: string) {
     return this.companyService.searchByName(name);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.companyService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+   @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   @UseInterceptors(
     FileInterceptor('logo', {
       storage: diskStorage({
@@ -93,7 +93,7 @@ export class CompanyController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.companyService.remove(id);
   }

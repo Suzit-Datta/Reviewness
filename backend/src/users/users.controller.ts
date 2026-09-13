@@ -73,7 +73,7 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   public getUsers(@Query('userName') userName?: string) {
     if (userName) {
       return this.usersService.getUserByUserName(userName);
@@ -83,14 +83,14 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   public getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getUserById(id);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
@@ -131,7 +131,7 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
@@ -172,7 +172,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN,Role.USER,Role.COMPANY,Role.EMPLOYEE)
   public deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.softDeleteUser(id);
   }

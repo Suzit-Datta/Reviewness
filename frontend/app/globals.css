@@ -1,26 +1,40 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui" {
+  themes: reviewness --default;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@plugin "daisyui/theme" {
+  name: "reviewness";
+  default: true;
+  color-scheme: light;
+
+  --color-primary: #1B7A8C;
+  --color-primary-content: #FFFFFF;
+  --color-secondary: #3E5561;
+  --color-secondary-content: #FFFFFF;
+  --color-accent: #F5B841;
+  --color-accent-content: #0F2A38;
+  --color-neutral: #0F2A38;
+  --color-neutral-content: #FFFFFF;
+  --color-base-100: #FFFFFF;
+  --color-base-200: #F7F6F3;
+  --color-base-300: #E4E7E9;
+  --color-base-content: #0F2A38;
+  --color-info: #1B7A8C;
+  --color-success: #2E8B6F;
+  --color-warning: #F5B841;
+  --color-error: #C4483A;
+
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --font-heading: var(--font-space-grotesk);
+  --font-body: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), sans-serif;
+  background-color: #F7F6F3;
 }

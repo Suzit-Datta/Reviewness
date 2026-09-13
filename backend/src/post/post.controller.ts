@@ -10,14 +10,47 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface.js';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 import { PostService } from './post.service.js';
 
 import { CreatePostDto } from './dtos/create-post.dto.js';
 import { UpdatePostDto } from './dtos/update-post.dto.js';
+
+// Shared upload config for the post `photo` field: writes the file to
+// ./uploads with a unique name so `photo.filename` is populated and can
+// be persisted on the post entity.
+const photoUploadOptions: MulterOptions = {
+  storage: diskStorage({
+    destination: './uploads',
+    filename: (request, file, callback) => {
+      const uniqueName =
+        Date.now() + '-' + Math.round(Math.random() * 1000000);
+      const extension = extname(file.originalname).toLowerCase();
+      callback(null, uniqueName + extension);
+    },
+  }),
+  limits: {
+    fileSize: 3000000,
+  },
+  fileFilter: (request, file, callback) => {
+    const extension = extname(file.originalname).toLowerCase();
+    const allowedExtensions = ['.jpg', '.jpeg', '.png'];
+    if (!allowedExtensions.includes(extension)) {
+      return callback(
+        new BadRequestException('Only JPG, JPEG and PNG images are allowed'),
+        false,
+      );
+    }
+    callback(null, true);
+  },
+};
 
 @Controller('posts')
 export class PostController {
@@ -44,7 +77,7 @@ export class PostController {
 
   @PostMethod()
   @UseInterceptors(
-    FileInterceptor('photo'),
+    FileInterceptor('photo', photoUploadOptions),
   )
   createPost(
     @Body() createPostDto: CreatePostDto,
@@ -58,7 +91,7 @@ export class PostController {
 
   @Put(':id')
   @UseInterceptors(
-    FileInterceptor('photo'),
+    FileInterceptor('photo', photoUploadOptions),
   )
   updatePost(
     @Param('id', ParseIntPipe) id: number,
@@ -74,7 +107,7 @@ export class PostController {
 
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('photo'),
+    FileInterceptor('photo', photoUploadOptions),
   )
   patchPost(
     @Param('id', ParseIntPipe) id: number,
