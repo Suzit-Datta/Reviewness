@@ -5,6 +5,7 @@ import { AdminController } from './admin.controller.js';
 import { Admin } from './entities/admin.entity.js';
 import { AdminSettings } from './entities/admin-settings.entity.js'; 
 import {Employee} from '../employee/employee.entity.js';
+import { AuthModule } from '../auth/auth.module.js';
 import { MailModule } from '../mail/mail.module.js';
 @Module({
   imports: [
@@ -13,8 +14,11 @@ import { MailModule } from '../mail/mail.module.js';
       AdminSettings,
       Employee,
     ]),
+    AuthModule,
     MailModule,
   ],
+
+
   controllers: [AdminController],
   providers: [AdminService],
 })
