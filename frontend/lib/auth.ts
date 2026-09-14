@@ -16,6 +16,15 @@ export function clearAuth() {
   localStorage.removeItem('userId');
 }
 
+export function getAuth(): AuthData | null {
+  if (typeof window === 'undefined') return null;
+  const accessToken = localStorage.getItem('accessToken');
+  const role = localStorage.getItem('role');
+  const userId = localStorage.getItem('userId');
+  if (!accessToken || !role || !userId) return null;
+  return { accessToken, role, id: Number(userId) };
+}
+
 export function getRole(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('role');

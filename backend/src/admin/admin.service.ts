@@ -80,11 +80,18 @@ export class AdminService {
     const savedAdmin =
       await this.adminRepository.save(admin);
 
-    // Send registration email
-    await this.mailService.sendRegistrationMail(
-      savedAdmin.email,
-      savedAdmin.name,
-    );
+    // Send registration email — failure here should never block registration
+    try {
+      await this.mailService.sendRegistrationMail(
+        savedAdmin.email,
+        savedAdmin.name,
+      );
+    } catch (error) {
+      console.warn(
+        'Admin registration email failed to send:',
+        error instanceof Error ? error.message : error,
+      );
+    }
 
     return savedAdmin;
   }
