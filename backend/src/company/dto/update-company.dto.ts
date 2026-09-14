@@ -4,12 +4,15 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  IsBoolean,
   MaxLength,
   MinLength,
 } from 'class-validator';
+
 import { Type } from 'class-transformer';
 
 export class UpdateCompanyDto {
+
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -48,4 +51,8 @@ export class UpdateCompanyDto {
   @IsString()
   @MaxLength(20)
   phone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isApproved?: boolean;
 }

@@ -51,7 +51,9 @@ export class EmployeeService {
           : createEmployeeDto.image,
       });
 
+    let savedEmployee: Employee;
     try {
+<<<<<<< HEAD
       const savedEmployee =
         await this.employeeRepository.save(
           employee,
@@ -71,6 +73,9 @@ export class EmployeeService {
       });
 
       return savedEmployee;
+=======
+      savedEmployee = await this.employeeRepository.save(employee);
+>>>>>>> feature/employee
     } catch (error) {
       if (
         error instanceof Error &&
@@ -81,9 +86,23 @@ export class EmployeeService {
           'An employee with this email or username already exists',
         );
       }
-
       throw error;
     }
+
+    // Send registration email — failure here should never block registration
+    try {
+      await this.mailService.sendRegistrationMail(
+        savedEmployee.email,
+        savedEmployee.userName,
+      );
+    } catch (error) {
+      console.warn(
+        'Registration email failed to send:',
+        error instanceof Error ? error.message : error,
+      );
+    }
+
+    return savedEmployee;
   }
 
   // Get all employees
