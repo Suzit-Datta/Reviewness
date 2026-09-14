@@ -21,6 +21,17 @@ export function getRole(): string | null {
   return localStorage.getItem('role');
 }
 
+export function getUserId(): number | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    return null;
+  }
+  return Number(userId);
+}
+
 export function isLoggedIn(): boolean {
   if (typeof window === 'undefined') return false;
   return !!localStorage.getItem('accessToken');

@@ -18,6 +18,7 @@ import { PostModule } from './post/post.module.js';
 import { AuthModule } from './auth/auth.module.js';
 
 import { MailModule } from './mail/mail.module.js';
+import { CompanyNotificationModule } from './company-notification/company-notification.module.js';
 
 
 @Module({
@@ -50,6 +51,7 @@ import { MailModule } from './mail/mail.module.js';
     PostModule,
     MailModule,
     AuthModule,
+    CompanyNotificationModule,
   ],
 
 
