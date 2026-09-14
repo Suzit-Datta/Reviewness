@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+
 import { Space_Grotesk, Inter } from 'next/font/google';
+
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -31,7 +33,9 @@ export default function RootLayout({
       data-theme="reviewness"
       className={`${spaceGrotesk.variable} ${inter.variable}`}
     >
-      <body>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
