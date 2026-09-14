@@ -99,7 +99,8 @@ function NavLinks({
       >
         Dashboard
       </Link>
-      <span className="badge badge-accent font-semibold">{role}</span>
+      <span className="inline-flex items-center rounded-full bg-yellow-600 px-3 py-1 text-xs font-semibold text-neutral-content">
+       {role}</span>
       <button onClick={onLogout} className="btn btn-primary btn-sm">
         Logout
       </button>

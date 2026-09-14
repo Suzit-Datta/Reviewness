@@ -25,3 +25,9 @@ export function isLoggedIn(): boolean {
   if (typeof window === 'undefined') return false;
   return !!localStorage.getItem('accessToken');
 }
+
+export function getUserId(): number | null {
+  if (typeof window === 'undefined') return null;
+  const id = localStorage.getItem('userId');
+  return id ? Number(id) : null;
+}

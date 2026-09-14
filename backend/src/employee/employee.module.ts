@@ -5,6 +5,7 @@ import { EmployeeController } from './employee.controller.js';
 import { Employee } from './employee.entity.js';
 import {AuthModule} from '../auth/auth.module.js'
 import { MailModule } from '../mail/mail.module.js';
+import { NotificationModule } from '../admin-notification/notification.module.js';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MailModule } from '../mail/mail.module.js';
     ]),
     AuthModule,
     MailModule,
+    NotificationModule,
   ],
 
   controllers: [EmployeeController],

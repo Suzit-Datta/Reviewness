@@ -13,13 +13,14 @@ import { CreateEmployeeDto } from './dto/create-employee.dto.js';
 import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
 
 import { MailService } from '../mail/mail.service.js';
+import { NotificationService } from '../admin-notification/notification.service.js';
 
 @Injectable()
 export class EmployeeService {
   constructor(
     @InjectRepository(Employee)
     employeeRepository: Repository<Employee>,
-
+    private readonly notificationService: NotificationService,
     mailService: MailService,
   ) {
     this.employeeRepository = employeeRepository;
@@ -61,6 +62,13 @@ export class EmployeeService {
         savedEmployee.email,
         savedEmployee.userName,
       );
+
+      // Notify admins in real time (Pusher)
+      await this.notificationService.notifyNewEmployee({
+        id: savedEmployee.id,
+        userName: savedEmployee.userName,
+        email: savedEmployee.email,
+      });
 
       return savedEmployee;
     } catch (error) {

@@ -49,3 +49,4 @@ export const sampleReviews: Review[] = [
     date: 'August 4, 2026',
   },
 ];
+export const SUBSCRIPTION_PRICE = 59; // USD per subscribed company
