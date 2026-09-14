@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { clearAuth } from '@/lib/auth';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { clearAuth } from "@/lib/auth";
 
 export function Navbar() {
   const router = useRouter();
@@ -13,8 +13,8 @@ export function Navbar() {
 
   useEffect(() => {
     // runs only in the browser, where localStorage exists
-    const token = localStorage.getItem('accessToken');
-    const storedRole = localStorage.getItem('role');
+    const token = localStorage.getItem("accessToken");
+    const storedRole = localStorage.getItem("role");
     setRole(token ? storedRole : null);
     setReady(true);
   }, []);
@@ -22,7 +22,7 @@ export function Navbar() {
   function handleLogout() {
     clearAuth();
     setRole(null);
-    router.push('/login');
+    router.push("/login");
   }
 
   return (
@@ -68,15 +68,25 @@ function NavLinks({
   }
 
   // LOGGED IN — USER
-  if (role === 'USER') {
+  if (role === "USER") {
     return (
       <>
+        <Link href="/user/dashboard" className="font-medium hover:opacity-80">
+          Dashboard
+        </Link>
+
         <Link href="/feed" className="font-medium hover:opacity-80">
           Feed
         </Link>
+
+        <Link href="/posts/my-posts" className="font-medium hover:opacity-80">
+          My Reviews
+        </Link>
+
         <Link href="/user/profile" className="font-medium hover:opacity-80">
           Profile
         </Link>
+
         <button onClick={onLogout} className="btn btn-primary btn-sm">
           Logout
         </button>
@@ -86,15 +96,15 @@ function NavLinks({
 
   // LOGGED IN — ADMIN / COMPANY / EMPLOYEE (all: Dashboard + role name + Logout)
   const dashboardRoutes: Record<string, string> = {
-    ADMIN: '/admin/dashboard',
-    COMPANY: '/company/dashboard',
-    EMPLOYEE: '/employee/dashboard',
+    ADMIN: "/admin/dashboard",
+    COMPANY: "/company/dashboard",
+    EMPLOYEE: "/employee/dashboard",
   };
 
   return (
     <>
       <Link
-        href={dashboardRoutes[role] ?? '/'}
+        href={dashboardRoutes[role] ?? "/"}
         className="font-medium hover:opacity-80"
       >
         Dashboard

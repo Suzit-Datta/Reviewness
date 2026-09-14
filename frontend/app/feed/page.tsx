@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { PostCard } from '@/components/ui/PostCard';
-import { getAllPosts } from '@/services/postService';
-import { isLoggedIn } from '@/lib/auth';
-import type { Post } from '@/types';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { PostCard } from "@/components/ui/PostCard";
+import { getAllPosts } from "@/services/postService";
+import { isLoggedIn } from "@/lib/auth";
+import type { Post } from "@/types";
 
 export default function FeedPage() {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     // Gate: require login before showing anything
     if (!isLoggedIn()) {
-      router.replace('/auth/login');
+      router.replace("/login");
       return;
     }
 
@@ -27,7 +27,9 @@ export default function FeedPage() {
 
     getAllPosts()
       .then(setPosts)
-      .catch(() => setError('Could not load the review feed. Please try again.'))
+      .catch(() =>
+        setError("Could not load the review feed. Please try again."),
+      )
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -54,7 +56,9 @@ export default function FeedPage() {
         )}
 
         {error && (
-          <div className="mt-8 rounded-lg bg-error/10 px-4 py-3 text-error">{error}</div>
+          <div className="mt-8 rounded-lg bg-error/10 px-4 py-3 text-error">
+            {error}
+          </div>
         )}
 
         {!loading && !error && posts.length === 0 && (
