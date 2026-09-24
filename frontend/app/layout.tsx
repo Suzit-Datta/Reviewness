@@ -31,7 +31,9 @@ export default function RootLayout({
       data-theme="reviewness"
       className={`${spaceGrotesk.variable} ${inter.variable}`}
     >
-      <body>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
