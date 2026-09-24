@@ -21,13 +21,18 @@ export function getRole(): string | null {
   return localStorage.getItem('role');
 }
 
+export function getUserId(): number | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    return null;
+  }
+  return Number(userId);
+}
+
 export function isLoggedIn(): boolean {
   if (typeof window === 'undefined') return false;
   return !!localStorage.getItem('accessToken');
-}
-
-export function getUserId(): number | null {
-  if (typeof window === 'undefined') return null;
-  const id = localStorage.getItem('userId');
-  return id ? Number(id) : null;
 }

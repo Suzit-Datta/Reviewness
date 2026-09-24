@@ -5,20 +5,19 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
 
 import { existsSync, unlinkSync } from 'fs';
-
 import { join } from 'path';
 
 import { Post } from './post.entity.js';
-
 import { CreatePostDto } from './dtos/create-post.dto.js';
-
 import { UpdatePostDto } from './dtos/update-post.dto.js';
 
 import { User } from '../users/user.entity.js';
+import { Product } from '../product/product.entity.js';
+
+import { CompanyNotificationService } from '../company-notification/company-notification.service.js';
 
 const UPLOADS_DIR = join(
   process.cwd(),
@@ -32,9 +31,7 @@ function isErrorWithCode(
     typeof error === 'object' &&
     error !== null &&
     'code' in error &&
-    typeof (
-      error as { code: unknown }
-    ).code === 'string'
+    typeof (error as { code: unknown }).code === 'string'
   );
 }
 
@@ -46,13 +43,23 @@ export class PostService {
 
     @InjectRepository(User)
     userRepository: Repository<User>,
+
+    @InjectRepository(Product)
+    productRepository: Repository<Product>,
+
+    companyNotificationService: CompanyNotificationService,
   ) {
     this.postRepository = postRepository;
     this.userRepository = userRepository;
+    this.productRepository = productRepository;
+    this.companyNotificationService =
+      companyNotificationService;
   }
 
   postRepository: Repository<Post>;
   userRepository: Repository<User>;
+  productRepository: Repository<Product>;
+  companyNotificationService: CompanyNotificationService;
 
   async getAllPosts(): Promise<Post[]> {
     try {
@@ -138,18 +145,45 @@ export class PostService {
       createPostDto.userId,
     );
 
+    const product =
+      await this.productRepository.findOne({
+        where: {
+          id: createPostDto.productId,
+        },
+      });
+
+    if (!product) {
+      throw new NotFoundException(
+        `Product with id ${createPostDto.productId} not found`,
+      );
+    }
+
+    const companyId = product.companyId;
+
     try {
       const post =
         this.postRepository.create({
           ...createPostDto,
+          companyId,
           image: photo
             ? photo.filename
             : undefined,
         });
 
-      return await this.postRepository.save(
-        post,
+      const savedPost =
+        await this.postRepository.save(post);
+
+      await this.companyNotificationService.sendReviewNotification(
+        companyId,
+        {
+          postId: savedPost.id,
+          productId: savedPost.productId,
+          message:
+            'Someone posted a new review on your product.',
+        },
       );
+
+      return savedPost;
     } catch (error) {
       if (
         isErrorWithCode(error) &&
@@ -259,5 +293,18 @@ export class PostService {
     if (existsSync(filePath)) {
       unlinkSync(filePath);
     }
+  }
+
+  async getPostsByCompanyId(
+    companyId: number,
+  ) {
+    return this.postRepository.find({
+      where: {
+        companyId,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

@@ -56,7 +56,7 @@ const photoUploadOptions: MulterOptions = {
 export class PostController {
   constructor(
     private postService: PostService,
-  ) {}
+  ) { }
 
   @Get()
   getAllPosts() {
@@ -126,5 +126,12 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.postService.deletePost(id);
+  }
+
+  @Get('company/:companyId')
+  getPostsByCompanyId(
+    @Param('companyId', ParseIntPipe) companyId: number,
+  ) {
+    return this.postService.getPostsByCompanyId(companyId);
   }
 }

@@ -36,7 +36,6 @@ export class UpdateCompanyDto {
   location?: string;
 
   @IsOptional()
-  @IsUrl()
   website?: string;
 
   @IsOptional()

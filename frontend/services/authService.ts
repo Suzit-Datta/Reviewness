@@ -8,7 +8,7 @@ export type LoginPayload = {
 
 export async function login(payload: LoginPayload) {
   const { data } = await api.post('/auth/login', payload);
-  return data; // { accessToken, role, id }
+  return data; 
 }
 
 export async function registerAdmin(formData: FormData) {
@@ -16,7 +16,6 @@ export async function registerAdmin(formData: FormData) {
   return data;
 }
 
-// Registration uses multipart/form-data because of the image upload
 export async function registerUser(formData: FormData) {
   const { data } = await api.post('/users', formData);
   return data;

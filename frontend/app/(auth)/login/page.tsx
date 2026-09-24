@@ -1,9 +1,11 @@
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Footer } from '@/components/layout/Footer';
+import { Navbar } from '@/components/layout/Navbar';
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col bg-base-200">
+      <Navbar />
       <div className="flex flex-grow items-center">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2">
           <div>

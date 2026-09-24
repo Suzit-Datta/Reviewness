@@ -14,7 +14,6 @@ export const adminRegisterSchema = z.object({
   phone: z.string().min(1, 'Phone is required'),
 });
 
-// ... keep your existing loginSchema ...
 
 export const userRegisterSchema = z.object({
   userName: z.string().min(1, 'Username is required').max(24, 'Max 24 characters'),
