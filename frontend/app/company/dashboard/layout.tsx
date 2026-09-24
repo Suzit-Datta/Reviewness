@@ -16,6 +16,12 @@ export default function DashboardLayout({
                 <h1 className="text-2xl font-bold mb-8">
                     Reviewness
                 </h1>
+                <Link
+                    href="/"
+                    className="block rounded-lg px-4 py-3 hover:bg-gray-100"
+                >
+                    Home
+                </Link>
 
                 <nav className="space-y-2">
 
