@@ -25,49 +25,57 @@ Reviewness is a product review platform where users can share their experiences 
 
 ## Project Structure
 
+```text
 Reviewness/
 ├── frontend/
 ├── backend/
 └── README.md
+```
 
 ## Getting Started
 
 ### 1. Clone the repository
 
-bash:
+```bash
 git clone YOUR_GITHUB_REPOSITORY_URL
 cd Reviewness
+```
 
 ### 2. Set up the backend
 
-bash:
+```bash
 cd backend
 npm install
+```
 
-Create a .env file with the required database and environment variables.
+Create a `.env` file with the required database and environment variables.
 
 Start the backend:
 
-bash:
+```bash
 npm run start:dev
+```
 
 ### 3. Set up the frontend
 
 Open another terminal:
 
-bash:
+```bash
 cd frontend
 npm install
+```
 
-Create a .env.local file and configure the backend API URL:
+Create a `.env.local` file and configure the backend API URL:
 
-env
+```env
 NEXT_PUBLIC_API_URL=http://localhost:7000
+```
 
 Start the frontend:
 
-bash:
+```bash
 npm run dev
+```
 
 Open **http://localhost:3000** in your browser.
 
@@ -75,5 +83,5 @@ Open **http://localhost:3000** in your browser.
 
 Configure the required environment variables for the database, authentication, and other services before running the project.
 
-Do not commit .env or .env.local files containing secrets.
+Do not commit `.env` or `.env.local` files containing secrets.
 
